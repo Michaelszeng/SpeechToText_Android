@@ -3,6 +3,8 @@ package com.example.sphinx4translater;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -22,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static void main(String[] args) throws Exception {
 
+        Log.d("test", "hello");
+
         Configuration configuration = new Configuration();
 
         configuration.setAcousticModelPath("resource:/edu/cmu/sphinx/models/en-us/en-us");
@@ -40,11 +44,28 @@ public class MainActivity extends AppCompatActivity {
         recognizer.stopRecognition();
         */
 
-        LiveSpeechRecognizer recognizer = new LiveSpeechRecognizer(configuration);
-// Start recognition process pruning previously cached data.
-        recognizer.startRecognition(true);
-        SpeechResult result = recognizer.getResult();
-// Pause recognition process. It can be resumed then with startRecognition(false).
-        recognizer.stopRecognition();
+        LiveSpeechRecognizer recognizer;
+        try {
+            recognizer = new LiveSpeechRecognizer(configuration);
+            // Start recognition process pruning previously cached data.
+            recognizer.startRecognition(true);
+
+            while (true) {
+                SpeechResult result = recognizer.getResult();
+                Log.d("result", result.getHypothesis());
+                String utterance = recognizer.getResult().getHypothesis();
+                Log.d("utterance", utterance);
+                if (utterance.startsWith("exit")) {
+                    break;
+                }
+            }
+            // Pause recognition process. It can be resumed then with startRecognition(false).
+            recognizer.stopRecognition();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            Log.d("Exception", String.valueOf(e));
+        }
+
     }
 }
